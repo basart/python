@@ -1,10 +1,7 @@
 import re
-def find_message(text):
-    list_simpole = re.findall('[A-Z]', text)
-    message = ''
-    for simbole in list_simpole:
-        message += simbole
+def find_message(text, message = ''):
+    message = message.join(re.findall('[A-Z]', text))
     return message
 
-encryption = find_message( 'How are you? Eh, ok. Low or Lower? Ohhh.')
+encryption = find_message('How are you? Eh, ok. Low or Lower? Ohhh.')
 print(encryption)
