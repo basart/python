@@ -11,5 +11,5 @@ def get_currency_rate(list_rate):
         if rate in list_rate:
             currency_rate[rate] = float(item['Rate'])
     return currency_rate
-
-print(get_currency_rate(['BYRUSD', 'BYREUR']))
+if __name__ == "__main__":
+    print(get_currency_rate(['BYRUSD', 'BYREUR']))
