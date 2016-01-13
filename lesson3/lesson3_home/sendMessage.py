@@ -38,8 +38,6 @@ def send_message(args_command_line):
     print(smtp_obj.sendmail(args.email, args.email_recipient, msg.as_string()))
     print(smtp_obj.quit())
 
-
-parser = create_parse()
-
-send_message(parser)
-
+if __name__ == "__main":
+    parser = create_parse()
+    send_message(parser)
