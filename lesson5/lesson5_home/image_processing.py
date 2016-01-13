@@ -10,8 +10,9 @@ def resize_image(path_image,dir, filename):
 
     except:
         pass
-tree = os.walk(os.getcwd())
-for dirpath, dirname, filename in tree:
-    for name in filename:
-        resize_image(os.path.join(dirpath, name), dirpath, name)
-    #print(dirpath, dirname, filename)
+if __name__ == "__main__":
+    tree = os.walk(os.getcwd())
+    for dirpath, dirname, filename in tree:
+        for name in filename:
+            resize_image(os.path.join(dirpath, name), dirpath, name)
+        #print(dirpath, dirname, filename)
