@@ -1,10 +1,10 @@
-from game.money_player.money_player import MoneyPlayer
 import json
+import game.money_player.money_player as mp
 
 
-class Player(MoneyPlayer):
+class Player(mp.MoneyPlayer):
     def __init__(self, nick, login, password):
-        MoneyPlayer.__init__()
+        mp.MoneyPlayer.__init__(self)
         self.nick = nick
         self.login = login
         self.password = password

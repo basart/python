@@ -2,11 +2,10 @@ import json
 
 class MoneyPlayer(object):
 
-    coefficient_silver_to_gold = 0.1
-
     def __init__(self, total_number_of_gold=100, total_number_of_silver=1000):
         self.total_number_of_gold = total_number_of_gold
         self.total_number_of_silver = total_number_of_silver
+        self._coefficient_silver_to_gold = 0.1
 
     def as_dict(self):
         d = {
@@ -30,6 +29,5 @@ class MoneyPlayer(object):
         )
 
     def silver_to_gold(self, number_of_silver):
-        global coefficient_silver_to_gold
-        self.total_number_of_gold += coefficient_silver_to_gold * number_of_silver
+        self.total_number_of_gold += self._coefficient_silver_to_gold * number_of_silver
         self.total_number_of_silver -= number_of_silver
