@@ -5,6 +5,17 @@ import pylab
 from matplotlib import mlab
 import matplotlib.pyplot as plt
 
+
+def average_value(func_for_surting):
+    def wrapper(test_list):
+        runtime_sorting = []
+        for number_current_test in range(5):
+            runtime_sorting.append(func_for_surting(test_list))
+        runtime_sorting.sort()
+        average_execution_time_of_sorting = sum(runtime_sorting[1:-1]) / 3
+        return average_execution_time_of_sorting
+    return wrapper
+
 def iter_list(count_number):
     test_list = []
     for item in range(count_number):
@@ -17,19 +28,19 @@ def puz(list_):
             if list_[j] > list_[j+1]:
                 list_[j], list_[j + 1] = list_[j + 1], list_[j]
 
-def timer_for_sorting_bubble(test_list):
+@average_value
+def timer_for_sorting_bubble(list_for_sorting):
     start = datetime.datetime.now()
-    puz(test_list)
+    puz(list_for_sorting)
     finish = datetime.datetime.now()
     return (finish - start).total_seconds()
 
-
-def timer_for_quick_sort(test_list):
+@average_value
+def timer_for_quick_sort(list_for_sorting):
     start = datetime.datetime.now()
-    test_list.sort()
+    list_for_sorting.sort()
     finish = datetime.datetime.now()
     return (finish - start).total_seconds()
-
 
 
 if __name__ == "__main__":
@@ -37,6 +48,9 @@ if __name__ == "__main__":
     test_list = []
     for i in range(len(xlist)):
         test_list.append(iter_list(xlist[i]))
+    # for x in xlist:
+    #     print(x)
+    #     average_value(test_list[x/10000-1])
     plt.subplot(211)
     ylist = [timer_for_quick_sort(test_list[x/10000-1]) for x in xlist]
     plt.bar(xlist, ylist, 100)
@@ -49,5 +63,7 @@ if __name__ == "__main__":
     plt.xticks(xlist)
     plt.yticks(ylist)
     plt.show()
+
+
 
 
