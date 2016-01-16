@@ -1,8 +1,10 @@
-#-*- coding:utf8 -*-
+# -*- coding:utf8 -*-
 import csv
-import pprint
 import urllib2
 import json
+import re
+import pprint
+
 
 def get_currency_rate(list_rate):
     try:
@@ -18,27 +20,88 @@ def get_currency_rate(list_rate):
     except urllib2.HTTPError:
         print('error')
 
-def parsing_csv_file_and_total_number_of_money_spent(file_table_with_data):
-    #table = [row[:-1] for row in csv.reader(infile)]
-    table = []
-    total_number_of_money_spent = 0
+
+def make_list_in_tuple_list_in_list(list_tuple):
+    for column in range(len(list_tuple)):
+        list_tuple[column] = list(list_tuple[column])
+    return list_tuple
+
+
+def formatting_table(table_with_data):
+    number_row_in_table = len(table_with_data[0])
     currency_rate = get_currency_rate(['USDBYR', 'RUBBYR', 'EURBYR', 'BYRBYR'])
+    for index_row in range(number_row_in_table):
+        table_with_data[2][index_row] = float(table_with_data[2][index_row])
+        try:
+            if table_with_data[5][index_row] in ['RUB', 'EUR', 'USD']:
+                table_with_data[3][index_row] = int(table_with_data[3][index_row]) * currency_rate[table_with_data[5][index_row]+'BYR']
+            elif table_with_data[5][index_row] == 'BYR':
+                table_with_data[3][index_row] = int(table_with_data[3][index_row])
+        except:
+            print('server error 111')
+    # pprint.pprint(table_with_data)
+    return table_with_data
+
+
+def parsing_csv_file_and_total_money_spent(file_table_with_data):
+    # table = [row[:-1] for row in csv.reader(infile)]
+    table = []
     for row in csv.reader(file_table_with_data):
         row = row[:-1]
-        table.append(row)
-        try:
-            if row[-1] in ['RUB', 'EUR', 'USD']:
-                total_number_of_money_spent += int(row[3]) * currency_rate[row[-1]+'BYR']
-            elif row[-1] == 'BYR':
-                total_number_of_money_spent += int(row[3])
-        except:
-            print('server error')
+        if row[0]:
+            table.append(row)
     table = table[1:]
     table_t = list(zip(*table))
-    pprint.pprint(table_t)
-    pprint.pprint(currency_rate)
-    pprint.pprint(total_number_of_money_spent)
+    table_t = make_list_in_tuple_list_in_list(table_t)
+    formatting_table_t_data = formatting_table(table_t)
+    return formatting_table_t_data
+
+
+def get_total_money_spent(tupple_money):
+    total_number_of_money_spent = 0.0
+    for day_information in tupple_money:
+        total_number_of_money_spent += day_information
+    return total_number_of_money_spent
+
+
+def average_fuel_consumption(total_mileage, list_of_fuel_day, calculation_of_the=100):
+    average_fuel_consumption_of_the = sum(list_of_fuel_day) / total_mileage * calculation_of_the
+    return average_fuel_consumption_of_the
+
+
+def get_month_and_year(date):
+    day = ''
+    day = day.join(re.findall('\/\w+\/', date))
+    month_and_year = date.replace(day, '')
+    return month_and_year
+
+
+def to_split_cost_data_by_month(list_date_day, list_money):
+    dictionary_with_cost_per_month = {}
+    average_cost_for_month = []
+    consider_month_and_year = ''
+    for day_information in range(len(list_date_day)):
+        month_and_year = get_month_and_year(list_date_day[day_information])
+        if consider_month_and_year != month_and_year:
+            consider_month_and_year = month_and_year
+            dictionary_with_cost_per_month[consider_month_and_year] = []
+            dictionary_with_cost_per_month[consider_month_and_year].append(list_money[day_information])
+        else:
+            dictionary_with_cost_per_month[consider_month_and_year].append(list_money[day_information])
+    for cost_for_month in dictionary_with_cost_per_month:
+        average_cost_for_month.append(sum(dictionary_with_cost_per_month[cost_for_month]) / len(cost_for_month))
+    average_cost_for_total_month = sum(average_cost_for_month) / len(average_cost_for_month)
+    return average_cost_for_total_month
+
 
 if __name__ == "__main__":
     infile = open('car_stats.csv', 'rb')
-    parsing_csv_file_and_total_number_of_money_spent(infile)
+    transposed_data_table = parsing_csv_file_and_total_money_spent(infile)
+    total_money_spent = get_total_money_spent(transposed_data_table[3])
+    average_fuel_consumption_on_100_km = average_fuel_consumption(
+        int(transposed_data_table[1][-1]), transposed_data_table[2])
+    average_cost_for_total_month = to_split_cost_data_by_month(
+        transposed_data_table[0], transposed_data_table[3])
+    print('Всего денег потрачено на топливо - %.2f р.' % total_money_spent)
+    print('В среднем в месяц уходит в денег на топливо - %.2f р.' % average_cost_for_total_month)
+    print('Средний расход топлива, в литрах на 100 км - %.2f л' % average_fuel_consumption_on_100_km)
