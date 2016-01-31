@@ -65,7 +65,7 @@ def get_total_money_spent(tupple_money):
 
 
 def average_fuel_consumption(total_mileage, list_of_fuel_day, calculation_of_the=100):
-    average_fuel_consumption_of_the = sum(list_of_fuel_day) / total_mileage * calculation_of_the
+    average_fuel_consumption_of_the = (sum(list_of_fuel_day) - 13.6 - list_of_fuel_day[-1]) / total_mileage * calculation_of_the
     return average_fuel_consumption_of_the
 
 
@@ -76,22 +76,12 @@ def get_month_and_year(date):
     return month_and_year
 
 
-def to_split_cost_data_by_month(list_date_day, list_money):
-    dictionary_with_cost_per_month = {}
-    average_cost_for_month = []
-    consider_month_and_year = ''
+def get_count_month(list_date_day):
+    month = set()
     for day_information in range(len(list_date_day)):
-        month_and_year = get_month_and_year(list_date_day[day_information])
-        if consider_month_and_year != month_and_year:
-            consider_month_and_year = month_and_year
-            dictionary_with_cost_per_month[consider_month_and_year] = []
-            dictionary_with_cost_per_month[consider_month_and_year].append(list_money[day_information])
-        else:
-            dictionary_with_cost_per_month[consider_month_and_year].append(list_money[day_information])
-    for cost_for_month in dictionary_with_cost_per_month:
-        average_cost_for_month.append(sum(dictionary_with_cost_per_month[cost_for_month]) / len(cost_for_month))
-    average_cost_for_total_month = sum(average_cost_for_month) / len(average_cost_for_month)
-    return average_cost_for_total_month
+        month.add(get_month_and_year(list_date_day[day_information]))
+    count_month = len(month)
+    return count_month
 
 
 if __name__ == "__main__":
@@ -100,8 +90,7 @@ if __name__ == "__main__":
     total_money_spent = get_total_money_spent(transposed_data_table[3])
     average_fuel_consumption_on_100_km = average_fuel_consumption(
         int(transposed_data_table[1][-1]), transposed_data_table[2])
-    average_cost_for_total_month = to_split_cost_data_by_month(
-        transposed_data_table[0], transposed_data_table[3])
+    average_cost_for_total_month = total_money_spent / get_count_month(transposed_data_table[0])
     print('Всего денег потрачено на топливо - %.2f р.' % total_money_spent)
     print('В среднем в месяц уходит в денег на топливо - %.2f р.' % average_cost_for_total_month)
-    print('Средний расход топлива, в литрах на 100 км - %.2f л' % average_fuel_consumption_on_100_km)
+    print('Средний расход топлива, в литрах на 100 км - %.5f л' % average_fuel_consumption_on_100_km)
