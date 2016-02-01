@@ -44,21 +44,19 @@ def timer_for_quick_sort(list_for_sorting):
 
 
 if __name__ == "__main__":
-    xlist = mlab.frange(10000, 50000, 10000)
+    xlist = mlab.frange(1000, 5000, 1000)
     test_list = []
     for i in range(len(xlist)):
         test_list.append(iter_list(xlist[i]))
-    # for x in xlist:
-    #     print(x)
-    #     average_value(test_list[x/10000-1])
+
     plt.subplot(211)
-    ylist = [timer_for_quick_sort(test_list[x/10000-1]) for x in xlist]
+    ylist = [timer_for_quick_sort(test_list[x/1000-1]) for x in xlist]
     plt.bar(xlist, ylist, 100)
     plt.xticks(xlist)
     plt.yticks(ylist)
 
     plt.subplot(212)
-    ylist = [timer_for_sorting_bubble(test_list[x/10000-1]) for x in xlist]
+    ylist = [timer_for_sorting_bubble(test_list[x/1000-1]) for x in xlist]
     plt.bar(xlist, ylist, 100)
     plt.xticks(xlist)
     plt.yticks(ylist)
