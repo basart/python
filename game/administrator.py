@@ -21,4 +21,4 @@ class Administrator(Moderator):
         )
 
     def to_set_the_status_of_moderator(self):
-        pass
+        print('Now you are moderator')

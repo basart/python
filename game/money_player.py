@@ -26,34 +26,39 @@ class MoneyPlayer(object):
 
     def save_to_db(self):
         cursor = db.connect.cursor()
-        dict_money = self.as_dict()
-        insert_query = 'insert into money (id, name, email, password, created, updated)' \
-            ' values (%(id)s, %(name)s, %(email)s, %(password)s, %(created)s, %(updated)s)'
+        sql_data = self.as_dict()
+        insert_query = 'insert into money (id, player_id, name, amount, created, updated)' \
+            ' values (%(id)s, %(player_id)s, %(name)s, %(amount)s, %(created)s, %(updated)s)'
         update_query = 'update money ' \
-            'set name=%(name)s, email=%(email)s, password=%(password)s, created=%(created)s, updated=%(updated)s ' \
+            'set player_id=%(player_id)s, name=%(name)s, amount=%(amount)s, created=%(created)s, updated=%(updated)s ' \
             'where id=%(id)s'
         try:
-            cursor.execute(insert_query, dict_money)
+            cursor.execute(insert_query, sql_data)
         except db.IntegrityError:
-            dict_money['updated'] = datetime.datetime.now()
-            cursor.execute(update_query, dict_money)
+            sql_data['updated'] = datetime.datetime.now()
+            cursor.execute(update_query, sql_data)
         db.connect.commit()
 
     def delete_from_db(self):
         cursor = db.connect.cursor()
-        dict_money = self.as_dict()
+        sql_data = {
+            'id': self.id
+        }
         query_for_delete_money = 'delete from money where id=%(id)s'
         try:
-            cursor.execute(query_for_delete_money, dict_money)
+            cursor.execute(query_for_delete_money, sql_data)
         except db.IntegrityError:
             print('error delete money')
 
-    def load_from_db(self, id):
+    def load_from_db(self, player_id):
         cursor = db.connect.cursor()
-        dict_money = self.as_dict()
+
+        sql_data = {
+            'player_id': player_id
+        }
         query_for_load_money = 'select * from money where player_id=%(player_id)s'
         try:
-            cursor.execute(query_for_load_money, dict_money)
+            cursor.execute(query_for_load_money, sql_data)
             db_row = cursor.fetchone()
             self.id = db_row[0]
             self.player_id = db_row[1]
@@ -75,7 +80,6 @@ class MoneyPlayer(object):
         self.amount = object_as_dict['amount']
         self.created = object_as_dict['created']
         self.updated = object_as_dict['updated']
-        return object_as_dict
 
     def __str__(self):
         return '{}(id={}, player_id={}, name={}, amount={}, created={}, updated={})'.format(

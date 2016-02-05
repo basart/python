@@ -19,8 +19,8 @@ class Moderator(Player):
         return '{}(login="{}", additional_attribute="{}")'.format(self.__class__.__name__, self.login, self.additional_attribute)
 
     def send_in_the_ban(self):
-        pass
+        print('M M Monster kill')
 
     def clean_chat(self): ################???
-        pass
+        print('cleaning cleaning cleaning cleaning cleaning cleaning cleaning cleaning cleaning')
 

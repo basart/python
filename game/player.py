@@ -2,6 +2,7 @@ import json
 import datetime
 import db
 
+
 class Player(object):
     def __init__(self, id=None, name=None, email=None, password=None):
         self.id = id
@@ -10,7 +11,6 @@ class Player(object):
         self.password = password
         self.created = datetime.datetime.now()
         self.updated = self.created
-
 
     def as_dict(self):
         d = {
@@ -26,35 +26,41 @@ class Player(object):
 
     def save_to_db(self):
         cursor = db.connect.cursor()
-        dict_player = self.as_dict()
+        sql_data = self.as_dict()
         insert_query = 'insert into player (id, name, email, password, created, updated)' \
-                       ' values (%(id)s, %(name)s, %(email)s, %(password)s, %(created)s, %(updated)s)'
+            ' values (%(id)s, %(name)s, %(email)s, %(password)s, %(created)s, %(updated)s)'
         update_query = 'update player ' \
             'set name=%(name)s, email=%(email)s, password=%(password)s, created=%(created)s, updated=%(updated)s ' \
             'where id=%(id)s'
         try:
-            cursor.execute(insert_query, dict_player)
+            cursor.execute(insert_query, sql_data)
         except db.IntegrityError:
-            dict_player['updated'] = datetime.datetime.now()
-            cursor.execute(update_query, dict_player)
+            sql_data['updated'] = datetime.datetime.now()
+            cursor.execute(update_query, sql_data)
         db.connect.commit()
 
     def delete_from_db(self):
         cursor = db.connect.cursor()
         delete_query = 'delete from player where id=%(id)s'
-        dict_player = self.as_dict()
+
+        sql_data = {
+            'id': self.id
+        }
         try:
-            cursor.execute(delete_query, dict_player)
-        except db.IntegrityError:
+            cursor.execute(delete_query, sql_data)
+        except:
             print('error delete player')
 
     def load_from_db(self, email):
-        load_query = 'select * from' \
-                     ' player where email=%(email)s'
-        dict_player = self.as_dict()
+        load_query = 'select id, name, email, password, created, updated ' \
+                     'from player' \
+                     ' where email=%(email)s'
+        sql_data = {
+            'email': email
+        }
         cursor = db.connect.cursor()
         try:
-            cursor.execute(load_query, dict_player)
+            cursor.execute(load_query, sql_data)
             db_row = cursor.fetchone()
             self.id = db_row[0]
             self.name = db_row[1]
@@ -62,7 +68,7 @@ class Player(object):
             self.password = db_row[3]
             self.created = db_row[4]
             self.updated = db_row[5]
-        except db.IntegrityError:
+        except TypeError:
             print('error load player')
 
     def save(self, file_object):
@@ -76,7 +82,6 @@ class Player(object):
         self.password = object_as_dict['password']
         self.created = object_as_dict['created']
         self.updated = object_as_dict['updated']
-        return object_as_dict
 
     def __str__(self):
         return '{}(id={}, name="{}", email="{}", password="{}", created={}, updated={})'.format(
@@ -92,11 +97,11 @@ class Player(object):
 
 if __name__ == "__main__":
     player1 = Player(1, "noob", "noob@mail.ru", "3223")
-    # player1.save_to_db()
-    player1.delete_from_db()
+    player1.save_to_db()
+    # player1.delete_from_db()
     # player = Player()
-    # player.load_from_db('kloun@tut.by')
-    # print(player)
+    # player.load_from_db('noob@mail.ru')
+    # player.delete_from_db()
     # player.save_to_db()
     # player.delete_from_db()
     # deserialized_player = Player()

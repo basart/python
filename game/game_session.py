@@ -2,52 +2,82 @@ import json
 import datetime
 import db
 
+
 class GameSession(object):
-    def __init__(self):
-        pass
+    def __init__(self, id=None, player_id=None, created=None, updated=None):
+        self.id = id
+        self.player_id = player_id
+        self.created = created
+        self.updated = updated
 
     def as_dict(self):
         d = {
             "type": self.__class__.__name__,
-
+            "id": self.id,
+            "player_id": self.player_id,
+            "created": self.created,
+            "updated": self.updated
         }
         return d
 
     def save_to_db(self):
-        dict_session = self.as_dict()
-        query_for_get_table = 'insert into session (id, name, email, password, created, updated)' \
-                              ' values (%(id)s, %(name)s, %(email)s, %(password)s, %(created)s, %(updated)s)'
+        cursor = db.connect.cursor()
+        sql_data = self.as_dict()
+        insert_query = 'insert into session (id, player_id created, updated)' \
+                              ' values (%(id)s, %(player_id)s, %(created)s, %(updated)s)'
         try:
-            self.dbcursor.execute(query_for_get_table, dict_session)
-        except:
-            query_for_get_table = 'update session ' \
-            'set name=%(name)s, email=%(email)s, password=%(password)s, created=%(created)s, updated=%(updated)s ' \
+            cursor.execute(insert_query, sql_data)
+        except db.IntegrityError:
+            insert_query = 'update session ' \
+            'set player_id=%(player_id)s, created=%(created)s, updated=%(updated)s ' \
             'where id=%(id)s'
-            dict_session['updated'] = datetime.datetime.now()
-            self.dbcursor.execute(query_for_get_table, dict_session)
+            sql_data['updated'] = datetime.datetime.now()
+            cursor.execute(insert_query, sql_data)
         db.connect.commit()
 
-    def delete_from_db(self, id):
-        query_for_delete_session = 'delete from session where id={}'.format(id)
+    def delete_from_db(self):
+        cursor = db.connect.cursor()
+        sql_data = {
+            'id': self.id
+        }
+        delete_query = 'delete from session where id=%(id)s'
         try:
-            self.dbcursor.execute(query_for_delete_session)
+            cursor.execute(delete_query, sql_data)
         except:
-            pass
+            print('error delete session')
 
-    def load_from_db(self, id):
-        query_for_load_session = 'select * from session where id={}'.format(id)
+    def load_from_db(self, player_id):
+        cursor = db.connect.cursor()
+        sql_data = {
+            'player_id': player_id
+        }
+        load_query = 'select * from session where player_id=%(player_id)s'
         try:
-            self.dbcursor.execute(query_for_load_session)
-        except:
-            pass
+            cursor.execute(load_query, sql_data)
+            db_row = cursor.fetchone()
+            self.id = db_row[0]
+            self.player_id = db_row[1]
+            self.created = db_row[2]
+            self.updated = db_row[3]
+        except db.IntegrityError:
+            print('error load session')
 
     def save(self, file_object):
         json.dump(self.as_dict(), file_object)
 
     def load(self, file_object):
         object_as_dict = json.load(file_object)
-        # self.name = object_as_dict["name"]
+        self.id = object_as_dict['id']
+        self.player_id = object_as_dict['player_id']
+        self.created = object_as_dict['created']
+        self.updated = object_as_dict['updated']
         return object_as_dict
 
     def __str__(self):
-        return '{}(blabla)'.format(self.__class__.__name__)
+        return '{}(id={}, player_id={}, created={}, updated_id={})'.format(
+            self.__class__.__name__,
+            self.id,
+            self.player_id,
+            self.created,
+            self.updated
+        )
