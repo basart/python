@@ -1,8 +1,10 @@
 from moderator import Moderator
 
+
 class Administrator(Moderator):
-    def __init__(self, nick,login, password, additional_attribute, another_additional_attribute):
-        Moderator.__init__(self, nick, login, password, additional_attribute)
+    def __init__(self, id=None, name=None, email=None, password=None, additional_attribute=None,
+                 another_additional_attribute=None):
+        Moderator.__init__(self, id, name, email, password, additional_attribute)
         self.another_additional_attribute = another_additional_attribute
 
     def as_dict(self):
@@ -17,7 +19,7 @@ class Administrator(Moderator):
 
     def __str__(self):
         return '{}(login="{}", additional_attribute="{}", another_additional_attribute="{}")'.format(
-            self.__class__.__name__, self.login, self.additional_attribute, self.another_additional_attribute
+            self.__class__.__name__, self.name, self.additional_attribute, self.another_additional_attribute
         )
 
     def to_set_the_status_of_moderator(self):

@@ -1,8 +1,9 @@
 from player import Player
 
+
 class Moderator(Player):
-    def __init__(self, nick, login, password, additional_attribute=None):
-        Player.__init__(self, nick, login, password)
+    def __init__(self, id=None, name=None, email=None, password=None, additional_attribute=None):
+        Player.__init__(self, id, name, email, password)
         self.additional_attribute = additional_attribute
 
     def as_dict(self):
@@ -16,7 +17,7 @@ class Moderator(Player):
         return object_as_dict
 
     def __str__(self):
-        return '{}(login="{}", additional_attribute="{}")'.format(self.__class__.__name__, self.login, self.additional_attribute)
+        return '{}(login="{}", additional_attribute="{}")'.format(self.__class__.__name__, self.name, self.additional_attribute)
 
     def send_in_the_ban(self):
         print('M M Monster kill')

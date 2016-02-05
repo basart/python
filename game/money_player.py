@@ -4,7 +4,7 @@ import db
 
 class MoneyPlayer(object):
 
-    def __init__(self, id=None, player_id=None, name=None, amount=None, created=None, updated=None):
+    def __init__(self, id=None, player_id=None, name=None, amount=None):
         self.id = id
         self.player_id = player_id
         self.name = name

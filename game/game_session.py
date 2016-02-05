@@ -4,7 +4,7 @@ import db
 
 
 class GameSession(object):
-    def __init__(self, id=None, player_id=None, created=None, updated=None):
+    def __init__(self, id=None, player_id=None):
         self.id = id
         self.player_id = player_id
         self.created = created

@@ -5,14 +5,14 @@ import db
 
 class CountersPlayer(object):
     def __init__(self, id=None, player_id=None, number_of_steps=0, number_of_strokes=0,
-                 number_of_completed_missions=0, created=None, updated=None):
+                 number_of_completed_missions=0):
         self.id = id
         self.player_id = player_id
         self.number_of_steps = number_of_steps
         self.number_of_strokes = number_of_strokes
         self.number_of_completed_missions = number_of_completed_missions
         self.created = datetime.datetime.now()
-        self.updated = self.updated
+        self.updated = datetime.datetime.now()
 
     def as_dict(self):
         d = {

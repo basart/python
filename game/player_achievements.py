@@ -5,7 +5,7 @@ from counters_player import CountersPlayer
 
 
 class PlayerAchievements(CountersPlayer):
-    def __init__(self, id=None, player_id=None, achievement_id=0, created=None):
+    def __init__(self, id=None, player_id=None, achievement_id=0):
         self.id = id
         self.player_id = player_id
         self.achievement_id = achievement_id
