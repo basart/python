@@ -36,7 +36,7 @@ class CountersPlayer(object):
             '%(number_of_completed_missions)s, %(created)s, %(updated)s)'
         update_query = 'update counters ' \
             'set player_id=%(player_id)s, steps=%(number_of_steps)s, strokes=%(number_of_strokes)s, ' \
-            'completed_missions=%(number_of_completed_missions)s, created=%(created)s, updated=%(updated)s ' \
+            'completed_missions=%(number_of_completed_missions)s, updated=%(updated)s ' \
             'where id=%(id)s'
         try:
             cursor.execute(insert_query, sql_data)
@@ -71,8 +71,8 @@ class CountersPlayer(object):
             self.number_of_strokes = db_row[3]
             self.created = db_row[4]
             self.updated = db_row[5]
-        except db.IntegrityError:
-            print('error load counters')
+        except TypeError:
+            print('error load counters. Counters entry does not exist! ')
 
     def save(self, file_object):
         json.dump(self.as_dict(), file_object)

@@ -61,8 +61,8 @@ class PlayerAchievements(object):
             self.achievement_id = db_row[2]
             self.created = db_row[3]
 
-        except db.IntegrityError:
-            print('error load money')
+        except TypeError:
+            print('error load achievement. Achievement entry does not exist! ')
 
     def save(self, file_object):
         json.dump(self.as_dict(), file_object)

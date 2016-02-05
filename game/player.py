@@ -30,7 +30,7 @@ class Player(object):
         insert_query = 'insert into player (id, name, email, password, created, updated)' \
             ' values (%(id)s, %(name)s, %(email)s, %(password)s, %(created)s, %(updated)s)'
         update_query = 'update player ' \
-            'set name=%(name)s, email=%(email)s, password=%(password)s, created=%(created)s, updated=%(updated)s ' \
+            'set name=%(name)s, email=%(email)s, password=%(password)s, updated=%(updated)s ' \
             'where id=%(id)s'
         try:
             cursor.execute(insert_query, sql_data)

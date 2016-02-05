@@ -30,7 +30,7 @@ class MoneyPlayer(object):
         insert_query = 'insert into money (id, player_id, name, amount, created, updated)' \
             ' values (%(id)s, %(player_id)s, %(name)s, %(amount)s, %(created)s, %(updated)s)'
         update_query = 'update money ' \
-            'set player_id=%(player_id)s, name=%(name)s, amount=%(amount)s, created=%(created)s, updated=%(updated)s ' \
+            'set player_id=%(player_id)s, name=%(name)s, amount=%(amount)s, updated=%(updated)s ' \
             'where id=%(id)s'
         try:
             cursor.execute(insert_query, sql_data)
@@ -68,6 +68,8 @@ class MoneyPlayer(object):
             self.updated = db_row[5]
         except db.IntegrityError:
             print('error load money')
+        except TypeError:
+            print('error load money. Money entry does not exist! ')
 
     def save(self, file_object):
         json.dump(self.as_dict(), file_object)

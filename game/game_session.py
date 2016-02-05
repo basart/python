@@ -29,7 +29,7 @@ class GameSession(object):
             cursor.execute(insert_query, sql_data)
         except db.IntegrityError:
             insert_query = 'update session ' \
-            'set player_id=%(player_id)s, created=%(created)s, updated=%(updated)s ' \
+            'set player_id=%(player_id)s, updated=%(updated)s ' \
             'where id=%(id)s'
             sql_data['updated'] = datetime.datetime.now()
             cursor.execute(insert_query, sql_data)
@@ -58,8 +58,8 @@ class GameSession(object):
             self.player_id = db_row[1]
             self.created = db_row[2]
             self.updated = db_row[3]
-        except db.IntegrityError:
-            print('error load session')
+        except TypeError:
+            print('error load session. Session entry does not exist! ')
 
     def save(self, file_object):
         json.dump(self.as_dict(), file_object)
