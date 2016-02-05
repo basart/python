@@ -7,8 +7,8 @@ class GameSession(object):
     def __init__(self, id=None, player_id=None):
         self.id = id
         self.player_id = player_id
-        self.created = created
-        self.updated = updated
+        self.created = datetime.datetime.now()
+        self.updated = datetime.datetime.now()
 
     def as_dict(self):
         d = {
@@ -23,8 +23,8 @@ class GameSession(object):
     def save_to_db(self):
         cursor = db.connect.cursor()
         sql_data = self.as_dict()
-        insert_query = 'insert into session (id, player_id created, updated)' \
-                              ' values (%(id)s, %(player_id)s, %(created)s, %(updated)s)'
+        insert_query = 'insert into session (id, player_id, created, updated)' \
+            ' values (%(id)s, %(player_id)s, %(created)s, %(updated)s)'
         try:
             cursor.execute(insert_query, sql_data)
         except db.IntegrityError:
@@ -33,7 +33,6 @@ class GameSession(object):
             'where id=%(id)s'
             sql_data['updated'] = datetime.datetime.now()
             cursor.execute(insert_query, sql_data)
-        db.connect.commit()
 
     def delete_from_db(self):
         cursor = db.connect.cursor()

@@ -94,16 +94,16 @@ class Player(object):
             self.updated
         )
 
-
-if __name__ == "__main__":
-    player1 = Player(1, "noob", "noob@mail.ru", "3223")
-    player1.save_to_db()
-    # player1.delete_from_db()
-    # player = Player()
-    # player.load_from_db('noob@mail.ru')
-    # player.delete_from_db()
-    # player.save_to_db()
-    # player.delete_from_db()
-    # deserialized_player = Player()
-    # deserialized_player.load(open("object_vasya@mail.ru.txt"))
-    # print("deserialized player is {}".format(deserialized_player))
+#
+# if __name__ == "__main__":
+#     player1 = Player(1, "noob", "noob@mail.ru", "3223")
+#     player1.save_to_db()
+#     # player1.delete_from_db()
+#     # player = Player()
+#     # player.load_from_db('noob@mail.ru')
+#     # player.delete_from_db()
+#     # player.save_to_db()
+#     # player.delete_from_db()
+#     # deserialized_player = Player()
+#     # deserialized_player.load(open("object_vasya@mail.ru.txt"))
+#     # print("deserialized player is {}".format(deserialized_player))

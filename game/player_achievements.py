@@ -4,8 +4,8 @@ import db
 from counters_player import CountersPlayer
 
 
-class PlayerAchievements(CountersPlayer):
-    def __init__(self, id=None, player_id=None, achievement_id=0):
+class PlayerAchievements(object):
+    def __init__(self, id=None, player_id=None, achievement_id=None):
         self.id = id
         self.player_id = player_id
         self.achievement_id = achievement_id
@@ -25,7 +25,7 @@ class PlayerAchievements(CountersPlayer):
         cursor = db.connect.cursor()
         sql_data = self.as_dict()
         insert_query = 'insert into achievements (id, player_id, achievement_id, created)' \
-            ' values (%(id)s, %(player_id)s, %(achievement_id)s, %(created)s'
+            ' values (%(id)s, %(player_id)s, %(achievement_id)s, %(created)s)'
         # update_query = 'update achievements ' \
         #     'set player_id=%(player_id)s, achievement_id=%(achievement_id)s, created=%(created)s' \
         #     'where id=%(id)s'
