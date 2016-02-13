@@ -16,11 +16,13 @@ def average_value(func_for_surting):
         return average_execution_time_of_sorting
     return wrapper
 
+
 def iter_list(count_number):
     test_list = []
     for item in range(count_number):
         test_list.append(random.choice(range(1000)))
     return test_list
+
 
 def puz(list_):
     for i in range(len(list_) - 1):
@@ -43,24 +45,33 @@ def timer_for_quick_sort(list_for_sorting):
     return (finish - start).total_seconds()
 
 
-if __name__ == "__main__":
-    xlist = mlab.frange(1000, 5000, 1000)
-    test_list = []
-    for i in range(len(xlist)):
-        test_list.append(iter_list(xlist[i]))
-
+def draw_diagrams(test_list):
     plt.subplot(211)
+    pylab.ylabel('work time quicksort')
+    pylab.xlabel('count element in the list')
     ylist = [timer_for_quick_sort(test_list[x/1000-1]) for x in xlist]
     plt.bar(xlist, ylist, 100)
     plt.xticks(xlist)
     plt.yticks(ylist)
 
     plt.subplot(212)
+    pylab.ylabel('work time bubble sort')
+    pylab.xlabel('count element in the list')
     ylist = [timer_for_sorting_bubble(test_list[x/1000-1]) for x in xlist]
     plt.bar(xlist, ylist, 100)
     plt.xticks(xlist)
     plt.yticks(ylist)
+
+    figManager = plt.get_current_fig_manager()
+    figManager.window.showMaximized()
     plt.show()
+
+if __name__ == "__main__":
+    xlist = mlab.frange(1000, 5000, 1000)
+    test_list = []
+    for i in range(len(xlist)):
+        test_list.append(iter_list(xlist[i]))
+    draw_diagrams(test_list)
 
 
 
