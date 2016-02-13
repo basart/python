@@ -2,23 +2,19 @@ import json
 import datetime
 import db
 
-class MoneyPlayer(object):
 
-    def __init__(self, id=None, player_id=None, name=None, amount=None):
-        self.id = id
+class MoneyPlayer(object):
+    def __init__(self, player_id=None):
         self.player_id = player_id
-        self.name = name
-        self.amount = amount
+        self._money = {'gold': 100, 'silver': 100}
         self.created = datetime.datetime.now()
         self.updated = self.created
 
     def as_dict(self):
         d = {
             'name_class': self.__class__.__name__,
-            'id': self.id,
             'player_id': self.player_id,
-            'name': self.name,
-            'amount': self.amount,
+            'money': self._money,
             'created': self.created,
             'updated': self.updated
         }
@@ -26,25 +22,33 @@ class MoneyPlayer(object):
 
     def save_to_db(self):
         cursor = db.connect.cursor()
-        sql_data = self.as_dict()
-        insert_query = 'insert into money (id, player_id, name, amount, created, updated)' \
-            ' values (%(id)s, %(player_id)s, %(name)s, %(amount)s, %(created)s, %(updated)s)'
+
+        insert_query = 'insert into money (player_id, name, amount, created, updated)' \
+            ' values (%(player_id)s, %(name)s, %(amount)s, %(created)s, %(updated)s)'
         update_query = 'update money ' \
             'set player_id=%(player_id)s, name=%(name)s, amount=%(amount)s, updated=%(updated)s ' \
             'where id=%(id)s'
-        try:
-            cursor.execute(insert_query, sql_data)
-        except db.IntegrityError:
-            sql_data['updated'] = datetime.datetime.now()
-            cursor.execute(update_query, sql_data)
-        db.connect.commit()
+        for name in self._money:
+            sql_data = {
+                'player_id': self.player_id,
+                'name': name,
+                'amount': self._money[name],
+                'created': self.created,
+                'updated': self.updated
+            }
+            try:
+                cursor.execute(insert_query, sql_data)
+            except db.IntegrityError:
+                sql_data['updated'] = datetime.datetime.now()
+                cursor.execute(update_query, sql_data)
+            db.connect.commit()
 
     def delete_from_db(self):
         cursor = db.connect.cursor()
         sql_data = {
-            'id': self.id
+            'id': self.player_id
         }
-        query_for_delete_money = 'delete from money where id=%(id)s'
+        query_for_delete_money = 'delete from money where player_id=%(player_id)s'
         try:
             cursor.execute(query_for_delete_money, sql_data)
         except db.IntegrityError:
@@ -52,20 +56,17 @@ class MoneyPlayer(object):
 
     def load_from_db(self, player_id):
         cursor = db.connect.cursor()
-
         sql_data = {
             'player_id': player_id
         }
         query_for_load_money = 'select * from money where player_id=%(player_id)s'
         try:
             cursor.execute(query_for_load_money, sql_data)
-            db_row = cursor.fetchone()
-            self.id = db_row[0]
-            self.player_id = db_row[1]
-            self.name = db_row[2]
-            self.amount = db_row[3]
-            self.created = db_row[4]
-            self.updated = db_row[5]
+            db_rows = cursor.fetchall()
+            money_player = {}
+            for row in db_rows:
+                money_player[row[2]] = row[3]
+            return money_player
         except db.IntegrityError:
             print('error load money')
         except TypeError:
@@ -76,21 +77,21 @@ class MoneyPlayer(object):
 
     def load(self, file_object):
         object_as_dict = json.load(file_object)
-        self.id = object_as_dict['id']
         self.player_id = object_as_dict['player_id']
-        self.name = object_as_dict['name']
-        self.amount = object_as_dict['amount']
+        self._money = object_as_dict['money']
         self.created = object_as_dict['created']
         self.updated = object_as_dict['updated']
 
     def __str__(self):
-        return '{}(id={}, player_id={}, name={}, amount={}, created={}, updated={})'.format(
+        return '{}(player_id={}, money={}, created={}, updated={})'.format(
             self.__class__.__name__,
-            self.id,
             self.player_id,
-            self.name,
-            self.amount,
+            self._money,
             self.created,
             self.updated
         )
 
+if __name__ == '__main__':
+    money = MoneyPlayer(1)
+    money = money.load_from_db(1)
+    print(money)

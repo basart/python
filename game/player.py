@@ -1,16 +1,23 @@
 import json
 import datetime
 import db
+from money_player import MoneyPlayer
+from counters_player import CountersPlayer
+from game_session import GameSession
+from player_achievements import PlayerAchievements
 
 
 class Player(object):
-    def __init__(self, id=None, name=None, email=None, password=None):
+    def __init__(self, id, name=None, email=None, password=None):
         self.id = id
         self.name = name
         self.email = email
         self.password = password
         self.created = datetime.datetime.now()
         self.updated = self.created
+        self.money = MoneyPlayer(player_id=self.id)
+        self.counters = CountersPlayer(player_id=self.id)
+        self.achievements = PlayerAchievements(player_id=self.id)
 
     def as_dict(self):
         d = {
@@ -83,6 +90,33 @@ class Player(object):
         self.created = object_as_dict['created']
         self.updated = object_as_dict['updated']
 
+    def get_money_player(self):
+        return self.money.load_from_db(self.id)
+
+    def delete_money_player(self):
+        self.money.delete_from_db()
+
+    def set_session(self):
+        self.session = GameSession(self.id)
+
+    def leave_the_game(self):
+        self.session.save_to_db()
+        self.money.save_to_db()
+        self.counters.save_to_db()
+        self.achievements.save_to_db()
+
+    def get_counters_player(self):
+        return self.counters.load_from_db(self.id)
+
+    def delete_counters_player(self):
+        self.counters.delete_from_db()
+
+    def get_achievements_player(self):
+        return self.achievements.load_from_db(self.id)
+
+    def delete_achievemets_player(self):
+        self.achievements.delete_from_db()
+
     def __str__(self):
         return '{}(id={}, name="{}", email="{}", password="{}", created={}, updated={})'.format(
             self.__class__.__name__,
@@ -94,16 +128,3 @@ class Player(object):
             self.updated
         )
 
-#
-# if __name__ == "__main__":
-#     player1 = Player(1, "noob", "noob@mail.ru", "3223")
-#     player1.save_to_db()
-#     # player1.delete_from_db()
-#     # player = Player()
-#     # player.load_from_db('noob@mail.ru')
-#     # player.delete_from_db()
-#     # player.save_to_db()
-#     # player.delete_from_db()
-#     # deserialized_player = Player()
-#     # deserialized_player.load(open("object_vasya@mail.ru.txt"))
-#     # print("deserialized player is {}".format(deserialized_player))

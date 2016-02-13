@@ -4,9 +4,8 @@ import db
 
 
 class CountersPlayer(object):
-    def __init__(self, id=None, player_id=None, number_of_steps=0, number_of_strokes=0,
+    def __init__(self, player_id=None, number_of_steps=0, number_of_strokes=0,
                  number_of_completed_missions=0):
-        self.id = id
         self.player_id = player_id
         self.number_of_steps = number_of_steps
         self.number_of_strokes = number_of_strokes
@@ -17,7 +16,6 @@ class CountersPlayer(object):
     def as_dict(self):
         d = {
             'type': self.__class__.__name__,
-            'id': self.id,
             'player_id': self.player_id,
             'number_of_steps': self.number_of_steps,
             'number_of_strokes': self.number_of_strokes,
@@ -31,13 +29,13 @@ class CountersPlayer(object):
     def save_to_db(self):
         cursor = db.connect.cursor()
         sql_data = self.as_dict()
-        insert_query = 'insert into counters (id, player_id, steps, strokes, completed_missions,created, updated)' \
-            ' values (%(id)s, %(player_id)s, %(number_of_steps)s, %(number_of_strokes)s, ' \
+        insert_query = 'insert into counters (player_id, steps, strokes, completed_missions,created, updated)' \
+            ' values (%(player_id)s, %(number_of_steps)s, %(number_of_strokes)s, ' \
             '%(number_of_completed_missions)s, %(created)s, %(updated)s)'
         update_query = 'update counters ' \
             'set player_id=%(player_id)s, steps=%(number_of_steps)s, strokes=%(number_of_strokes)s, ' \
             'completed_missions=%(number_of_completed_missions)s, updated=%(updated)s ' \
-            'where id=%(id)s'
+            'where player_id=%(player_id)s'
         try:
             cursor.execute(insert_query, sql_data)
         except db.IntegrityError:
@@ -48,9 +46,9 @@ class CountersPlayer(object):
     def delete_from_db(self):
         cursor = db.connect.cursor()
         sql_data = {
-            'id': self.id
+            'player_id': self.player_id
         }
-        delete_query = 'delete from counters where id=%(id)s'
+        delete_query = 'delete from counters where player_id=%(player_id)s'
         try:
             cursor.execute(delete_query, sql_data)
         except db.IntegrityError:
@@ -69,8 +67,10 @@ class CountersPlayer(object):
             self.player_id = db_row[1]
             self.number_of_steps = db_row[2]
             self.number_of_strokes = db_row[3]
-            self.created = db_row[4]
-            self.updated = db_row[5]
+            self.number_of_completed_missions= db_row[4]
+            self.created = db_row[5]
+            self.updated = db_row[6]
+            return {'steps': self.number_of_strokes, 'strokes': self.number_of_strokes, 'compleded_missions': self.number_of_completed_missions}
         except TypeError:
             print('error load counters. Counters entry does not exist! ')
 
@@ -79,7 +79,6 @@ class CountersPlayer(object):
 
     def load(self, file_object):
         object_as_dict = json.load(file_object)
-        self.id = object_as_dict['id']
         self.player_id = object_as_dict['player_id']
         self.number_of_steps = object_as_dict['number_of_steps']
         self.number_of_strokes = object_as_dict['number_of_strokes']
@@ -87,11 +86,9 @@ class CountersPlayer(object):
         self.updated = object_as_dict['updated']
 
     def __str__(self):
-        return '{}(id={}, player_id={}, experience={}, number_of_steps={}, ' \
-               'number_of_strokes={}, created={}, updated={})'\
-            .format(
+        return '{}(player_id={}, experience={}, number_of_steps={}, ' \
+               'number_of_strokes={}, created={}, updated={})'.format(
                 self.__class__.__name__,
-                self.id,
                 self.player_id,
                 self.number_of_steps,
                 self.number_of_strokes,
